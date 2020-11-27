@@ -1,0 +1,108 @@
+type User {
+  userId: ID!
+  passward: String!
+  card: [Card]
+  mail: String
+  lastLogin: String!
+}
+
+type Card {
+  user: User!
+  cardId: ID!
+  name: String!
+  rank: Rank!
+  icon: String!
+  backImage: String
+  nationalFlag: String
+  ConnectedSns: [Sns] # Is this to User??
+  following: [ID]! # cardId
+  followed: [ID]! # cardId
+}
+
+type Sns {
+  snsType: SnsType!
+  mail: String
+  accessToken: String
+  icon: String
+}
+
+type Game {
+  gameType: GameType!
+}
+
+type Login {
+  mail: String
+  password: String
+}
+
+enum Rank {
+  HIGH
+  MIDDLE
+  LOW
+}
+
+enum SnsType {
+  Facebok
+  Twitter
+  Amazon
+}
+
+enum GameType {
+  ZEROONE
+  CRICKET
+}
+
+type Query {
+  # ユーザー数（lastLogin、ｒankでフィルター可）
+  userCount: (startTime: String, endTime: String, rank: Rank): Int!
+  # フォローしているユーザーリスト
+  userFolloing(cardId: ID!): [Card]!
+  # フォローされているユーザーリスト
+  userFollowed(cardId: ID!): [Card]!
+  # ID指定されたユーザー情報取得（紐づいたカード情報のリスト含む）
+  User(userId: ID): User!
+  # ID指定されたカード情報取得（（紐づいたユーザー情報含む）
+  Card(cardId: ID!): Card!
+}
+
+type Mutation {
+  # 新規登録、ログイン/メールアドレスとパスワードで新規登録ができる
+  registerByMail(input: LoginInfo!): User!
+  # 新規登録、ログイン/SNS連動による新規登録ができる
+  registerBySNS(input: LoginInfo!): User!
+  # 新規登録、ログイン/登録した内容でログインさせる
+  loginByMail(input: LoginInfo!): User!
+  # カード関係/アイコンを登録させる、ニックネームを入力させる、GRAN IDを決めさせる
+  registerCard(input: cardRegisterInfo!): Card!
+  # カード関係/カードの背景カラーを追加設定できる
+  registerBackImage(color: String): String!
+  # カード関係/国旗を変更できる
+  registerNationalFlag(nationalFlag: String) String!
+  # カード関係/SNSの登録ができる
+  registerSns(input: SnsInfo!) Sns!
+}
+
+input LoginInfo {
+  mail: String,
+  password: String
+}
+
+input cardRegisterInfo {
+  icon: String!
+  name: String!
+  granId: String!
+}
+
+input SnsInfo {
+  snsType: String
+  mail: String
+  accessToken: String
+  icon: String
+}
+
+type Mutation {
+  # Sets a `Lift` status by sending `id` and `status`
+  setLiftStatus(id: ID!, status: LiftStatus!): Lift!
+  # Sets a `Trail` status by sending `id` and `status`
+  setTrailStatus(id: ID!, status: TrailStatus!): Trail!
+}
